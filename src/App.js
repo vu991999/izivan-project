@@ -1,26 +1,92 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+// import '../../styles/Login.css'
+import { Link, Redirect, Router } from 'react-router-dom'
+import { requestLogin } from './api'
+import Cookie from 'js-cookie';
+import './App.css'
+// import logo from './Layout/img/Logo-izivan.png'
+import ReactDOM from 'react-dom';
+// import Routes from './navigation';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+class App extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            username: 'kingman',
+            password: '123123'
+        }
+        this.login = this.login.bind(this);
+    }
+
+    // componentDidMount(){
+    //     window.location.href = '/home';
+    // }
+
+
+    async login() {
+        try {
+           
+            const res = await requestLogin({
+              USERNAME: this.state.username,
+              PASS: this.state.password
+            });
+             window.location.href = '/home';
+            Cookie.set('SESSION_ID', res.data.TokenDangNhap)
+            
+        } catch (err) {
+            alert("Sai tên tài khoản hoặc mật khẩu ! ")
+        }
+    }
+
+    handleTextChange(field, event) {
+        this.setState({
+            [field]: event.target.value
+        })
+    }
+
+    render() {
+        const { username, password } = this.state;
+        const token = Cookie.get("SESSION_ID");
+        // if (token) {
+        //     return <Redirect to='/' />
+        // }
+        return (
+            <>
+    <div class="container" className="App" id="backgr" style={{ height: '630px' }}>
+    <div class="row"  style={{marginLeft:'42%', marginRight: '5%'}}>
+        <div class="col-md-offset-5 col-md-4 text-center" >
+            
+              <div class="form-login" style={{marginTop: '50%'}}><br/>
+                    <h4> Izivan Group </h4>
+                <br/><br/>
+               <input type="username"
+                                    placeholder="Tài khoản"
+                                    className="form-control"
+                                    value={username}
+                                    onChange={(e) => this.handleTextChange('username', e)}
+                                    style={{width:''}}  
+                                />
+                <br/>
+               <input type="password"
+                                    placeholder="Mật khẩu"
+                                    className="form-control"
+                                    value={password}
+                                    onChange={(e) => this.handleTextChange('password', e)}
+                                />
+                <br/>
+                <div class="wrapper">
+                        <span class="group-btn">
+                            <a  onClick={() => this.login()}><h4 class='text-white'><button class="btn btn-success">Đăng nhập</button></h4></a>
+                        </span>
+                </div>
+            </div>
+        </div>
     </div>
-  );
+    </div>
+            </>
+        )
+    }
 }
 
-export default App;
+// ReactDOM.render(<App />, document.getElementById('Login'));
+export default App
